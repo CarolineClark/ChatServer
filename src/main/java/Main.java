@@ -7,10 +7,28 @@ import java.net.Socket;
 public class Main {
     public static void main(String[] args) throws IOException {
         ServerSocket server = new ServerSocket(12345);
+        final int[] counter = {0};
+        int maxUsers = 2;
 
-        Socket clientSocket = server.accept();
+        while (counter[0] < maxUsers) {
+            final Socket clientSocket = server.accept();
+            System.out.println("New user joined!");
+            counter[0]++;
 
-        // next step - create a thread for when this happens?
-        new ClientConnection(clientSocket).handle();
+            // next step - create a thread for when this happens?
+            new Thread(new Runnable() {
+
+                public void run() {
+                    try {
+                        new ClientConnection(clientSocket).handle();
+                        System.out.println("Disconnecting");
+                        counter[0]--;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("Disconnecting due to exception");
+                    }
+                }
+            }).run();
+        }
     }
 }

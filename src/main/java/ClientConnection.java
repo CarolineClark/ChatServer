@@ -16,9 +16,11 @@ public class ClientConnection {
     public void handle() throws IOException {
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
+            inputLine += "\n";
             System.out.print(inputLine);
             // send the information back to the client with the writer?
             writer.write(inputLine);
+            writer.flush();
 
             if (inputLine.equals("bye")) {
                 writer.write("disconnecting\n");
