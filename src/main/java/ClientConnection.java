@@ -6,21 +6,34 @@ import java.net.Socket;
 
 public class ClientConnection {
     private PrintWriter writer;
-    BufferedReader in;
+    private BufferedReader in;
+    private int id;
+    private BroadCaster broadCaster;
 
-    public ClientConnection(Socket clientSocket) throws IOException {
+    public ClientConnection(Socket clientSocket, int id, BroadCaster broadCaster) throws IOException {
+        this.id = id;
         writer = new PrintWriter(clientSocket.getOutputStream(), true);
+        writer.write(id);
+        writer.flush();
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        this.broadCaster = broadCaster;
+    }
+
+    public void send(String message) {
+        writer.write(message);
+        writer.flush();
     }
 
     public void handle() throws IOException {
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
-            inputLine += "\n";
-            System.out.print(inputLine);
-            // send the information back to the client with the writer?
-            writer.write(inputLine);
-            writer.flush();
+            if (inputLine.equals("")) {
+                continue;
+            }
+
+            inputLine = id + "," + inputLine + "\n";
+            System.out.print("Received input = " + inputLine);
+            broadCaster.notifiyAll(inputLine);
 
             if (inputLine.equals("bye")) {
                 writer.write("disconnecting\n");
