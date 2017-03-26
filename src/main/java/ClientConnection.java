@@ -4,13 +4,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientConnection {
+class ClientConnection {
     private PrintWriter writer;
     private BufferedReader in;
     private int id;
     private BroadCaster broadCaster;
 
-    public ClientConnection(Socket clientSocket, int id, BroadCaster broadCaster) throws IOException {
+    ClientConnection(Socket clientSocket, int id, BroadCaster broadCaster) throws IOException {
         this.id = id;
         writer = new PrintWriter(clientSocket.getOutputStream(), true);
         writer.write(id);
@@ -19,12 +19,12 @@ public class ClientConnection {
         this.broadCaster = broadCaster;
     }
 
-    public void send(String message) {
+    void send(String message) {
         writer.write(message);
         writer.flush();
     }
 
-    public void handle() throws IOException {
+    void handle() throws IOException {
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
             if (inputLine.equals("")) {
